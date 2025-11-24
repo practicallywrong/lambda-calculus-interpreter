@@ -37,4 +37,3 @@ ADD = (λm.(λn.(λf.(λx.((m f) ((n f) x))))))
 ## Notes
 
 * The normalizer uses a **step limit** (100,000 by default) to prevent infinite reductions.
-# lambda-calculus-interpreter
