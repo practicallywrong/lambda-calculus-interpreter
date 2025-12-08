@@ -35,13 +35,10 @@ class Lexer:
     def read_variable(self) -> str:
         if not (self.peek().isalpha() or self.peek() == "_"):
             raise SyntaxError("Variable must start with letter or underscore")
-
         start = self.pos
-        while self.pos < len(self.text) and (
-            self.peek().isalnum() or self.peek() == "_"
-        ):
+        while self.pos < len(self.text) and (self.peek().isalnum() or self.peek() == "_"):
             self.advance()
-        return self.text[start : self.pos]
+        return self.text[start:self.pos]
 
     def next_token(self) -> Token:
         self.skip_spaces()
@@ -146,38 +143,25 @@ Expr = Var | Abs | App
 
 
 class Parser:
-    def __init__(self, lexer, debug=False):
+    def __init__(self, lexer):
         self.tokens = lexer.tokenize()
         self.pos = 0
-        self.debug = debug
 
     def peek(self):
-        if self.pos >= len(self.tokens):
-            tok = Token(TokenType.EOF, "")
-        else:
-            tok = self.tokens[self.pos]
-        if self.debug:
-            print(f"[peek] pos={self.pos}, token={tok}")
-        return tok
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else Token(TokenType.EOF, "")
 
     def advance(self):
-        if self.debug and self.pos < len(self.tokens):
-            print(f"[advance] pos={self.pos}, token={self.tokens[self.pos]}")
         self.pos += 1
 
     def expect(self, token_type):
         tok = self.peek()
         if tok.type != token_type:
-            raise SyntaxError(
-                f"Expected {token_type}, got {tok.type} at position {self.pos}"
-            )
+            raise SyntaxError(f"Expected {token_type}, got {tok.type} at position {self.pos}")
         self.advance()
         return tok
 
     def parse_expression(self):
         tok = self.peek()
-        if self.debug:
-            print(f"[parse_expression] pos={self.pos}, token={tok}")
 
         if tok.type == TokenType.VARIABLE:
             self.advance()
@@ -202,15 +186,9 @@ class Parser:
         raise SyntaxError(f"Unexpected token: {tok.type} at position {self.pos}")
 
     def parse(self):
-        if self.debug:
-            print("[parse] Starting parsing")
         expr = self.parse_expression()
         if self.peek().type != TokenType.EOF:
-            raise SyntaxError(
-                f"Trailing tokens after expression at position {self.pos}"
-            )
-        if self.debug:
-            print("[parse] Finished parsing")
+            raise SyntaxError(f"Trailing tokens after expression at position {self.pos}")
         return expr
 
 
@@ -227,11 +205,9 @@ class Normalizer:
         while True:
             if self.steps >= self.max_steps:
                 raise RuntimeError("Too many reduction steps")
-
             new, changed = self._step(expr)
             if not changed:
                 return expr
-
             expr = new
             self.steps += 1
 
@@ -247,15 +223,12 @@ class Normalizer:
             if isinstance(expr.func, Abs):
                 r = expr.func.body.substitute(expr.func.param, expr.arg)
                 return r, True
-
             f2, changed = self._step(expr.func)
             if changed:
                 return App(f2, expr.arg), True
-
             a2, changed = self._step(expr.arg)
             if changed:
                 return App(expr.func, a2), True
-
             return expr, False
 
         return expr, False

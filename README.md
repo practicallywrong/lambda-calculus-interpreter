@@ -9,7 +9,6 @@ This project is a simple **λ-Calculus interpreter** with support for **macro de
 * **Macro expansion**: Define reusable lambda expressions in a configuration file.
 * **Expression normalization**: Reduces lambda expressions using beta-reduction.
 * Supports **α-conversion** to avoid variable capture during substitution.
-* **Debugging support**: Step-by-step token parsing and reduction (optional, default off).
 
 
 ## Usage

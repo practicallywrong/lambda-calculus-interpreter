@@ -30,7 +30,7 @@ except Exception as e:
 
 lexer = Lexer(expanded_text)
 
-parser = Parser(lexer, debug=False)
+parser = Parser(lexer)
 try:
     expr = parser.parse()
 except SyntaxError as e:
